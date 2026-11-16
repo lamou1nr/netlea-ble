@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="web/assets/icon-180.png" width="96" height="96" alt="Good Boy Rick Labs logo, a line drawing of a dog">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/good-boy-rick-labs-dark.png">
+    <img src="docs/good-boy-rick-labs.png" width="440" alt="Good Boy Rick Labs">
+  </picture>
 </p>
 
 # netlea-ble
@@ -490,7 +493,7 @@ The code is under the MIT license. See [LICENSE](LICENSE).
 
 ### Logo and name
 
-The Ricky logo (the image files in `web/assets/`) and the name Good Boy Rick Labs are not
+The Ricky logo (the image files in `web/assets/` and `docs/`) and the name Good Boy Rick Labs are not
 covered by the MIT license. You may keep and show them when you run, copy or share this app.
 You may not use them for any other project or product. If you build something different
 from this code, replace the logo and the name with your own.

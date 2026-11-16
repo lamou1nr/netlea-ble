@@ -1,7 +1,8 @@
 # Changelog
 
-## v0.1.1 (unreleased)
+## v0.1.1 (2026-11-15)
 
+- The README shows the Good Boy Rick Labs logo.
 - The default listen address is now `127.0.0.1` (this machine only). It was `0.0.0.0`.
   If other devices need to reach the bridge, set `BRIDGE_HOST=0.0.0.0` in `config`.
 
