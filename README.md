@@ -83,6 +83,21 @@ bluetoothctl scan on
 
 and look for a device whose name starts with `NL-`.
 
+### Which devices can reach it
+
+Out of the box the bridge only answers on the machine it runs on (`127.0.0.1`). That is
+enough for scripts and cron jobs on the same machine.
+
+To use the web page from a phone, tablet or another computer on your network, remove the
+`#` in front of this line in `config`:
+
+```
+BRIDGE_HOST=0.0.0.0
+```
+
+Then restart the service and open `http://<address of this machine>:3003/`. There is no
+login, so read "Security" before you do this.
+
 ## Configuration
 
 `config` is a plain `KEY=VALUE` file in systemd `EnvironmentFile` format. The service reads
@@ -92,7 +107,7 @@ these environment variables:
 |---|---|---|---|
 | `NETLEA_MAC` | yes | none | Bluetooth MAC address of the light. The service exits at startup if it is not set. |
 | `BRIDGE_PORT` | no | `3003` | TCP port for the HTTP API. |
-| `BRIDGE_HOST` | no | `0.0.0.0` | Address to listen on. `0.0.0.0` means every network interface. Use `127.0.0.1` if only programs on the same machine need the API. |
+| `BRIDGE_HOST` | no | `127.0.0.1` | Address to listen on. The default accepts connections from the same machine only. Set it to `0.0.0.0` to listen on every network interface, which is needed to open the web page from a phone or another computer. Read "Security" first. |
 | `CORS_ORIGIN` | no | `*` | Value of the `Access-Control-Allow-Origin` header. Set it to empty to send no CORS headers. |
 | `RESPONSE_TIMEOUT` | no | `3.0` | Seconds to wait for the light to answer a command. |
 | `STATE_FILE` | no | `data/state.json` next to `ble_bridge.py` | Where saved settings and schedules are kept. |
@@ -126,7 +141,9 @@ Close the app first.
 
 ## Web page
 
-Open `http://<host>:3003/` in a browser. The page has three parts:
+Open `http://localhost:3003/` in a browser on the machine that runs the bridge. To open it
+from a phone or another computer, set `BRIDGE_HOST=0.0.0.0` in `config`, restart the
+service, and use `http://<host>:3003/`. The page has three parts:
 
 - **Control**: a large brightness slider that scales the color mix, an on and off switch,
   sliders for R, W, G, B and F, and a box to save the current values under a name. The
@@ -429,15 +446,17 @@ Payload: one byte, 0. Purpose not confirmed. See `POST /read`.
 
 ## Security
 
-- The API has **no authentication**. By default it listens on all network interfaces
-  (`0.0.0.0`) and sends `Access-Control-Allow-Origin: *`. Anyone who can reach the port can
-  control the light. Both defaults can be changed with `BRIDGE_HOST` and `CORS_ORIGIN`.
+- The API has **no authentication**. By default it listens on `127.0.0.1`, so only
+  programs on the same machine can reach it. If you set `BRIDGE_HOST=0.0.0.0`, anyone who
+  can reach the port can control the light.
+- By default it sends `Access-Control-Allow-Origin: *`. This can be changed with
+  `CORS_ORIGIN`.
 - If no web page on another origin needs the API, set `CORS_ORIGIN` to empty.
 - `GET /health` and `GET /status` return the light's MAC address.
 - The web page and the settings and schedules API have no login either. Anyone who can open
   the page can change the light and edit or delete schedules.
-- Run it only on a network you trust and restrict the port with a firewall to the machines
-  that need it. Do not expose it to the internet.
+- If you open it to the network, do so only on a network you trust, and restrict the port
+  with a firewall to the machines that need it. Do not expose it to the internet.
 
 To report a security problem, see [SECURITY.md](SECURITY.md).
 

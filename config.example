@@ -9,8 +9,10 @@ NETLEA_MAC=AA:BB:CC:DD:EE:FF
 # TCP port for the HTTP API (optional, default 3003).
 BRIDGE_PORT=3003
 
-# Address to listen on (optional, default 0.0.0.0 = every network interface).
-# Use 127.0.0.1 if only programs on this machine need the API.
+# Address to listen on (optional, default 127.0.0.1 = this machine only).
+# To open the web page from a phone or another computer, or to call the API from
+# another machine, set it to 0.0.0.0 (every network interface) and read the
+# Security section of the README first: there is no login.
 #BRIDGE_HOST=0.0.0.0
 
 # Access-Control-Allow-Origin header (optional, default *).

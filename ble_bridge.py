@@ -37,8 +37,9 @@ import netlea_schedule as ns
 # Set NETLEA_MAC in the environment (see config.example). There is no default.
 NETLEA_MAC = os.environ.get("NETLEA_MAC", "").strip()
 BRIDGE_PORT = int(os.environ.get("BRIDGE_PORT", "3003"))
-# Address to listen on. 0.0.0.0 = every interface.
-BRIDGE_HOST = os.environ.get("BRIDGE_HOST", "0.0.0.0").strip() or "0.0.0.0"
+# Address to listen on. The default only accepts connections from this machine.
+# Set BRIDGE_HOST=0.0.0.0 to accept connections from other devices on the network.
+BRIDGE_HOST = os.environ.get("BRIDGE_HOST", "127.0.0.1").strip() or "127.0.0.1"
 # Value for Access-Control-Allow-Origin. Empty = send no CORS headers.
 CORS_ORIGIN = os.environ.get("CORS_ORIGIN", "*").strip()
 # Seconds to wait for the light to answer a command.

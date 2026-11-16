@@ -169,6 +169,10 @@ class ApiCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(FakeClient.made), 1)
         self.assertEqual(len(FakeClient.made[0].writes), 2)
 
+    async def test_default_listen_address_is_this_machine_only(self):
+        if "BRIDGE_HOST" not in os.environ:
+            self.assertEqual(b.BRIDGE_HOST, "127.0.0.1")
+
     async def test_cors_can_be_switched_off(self):
         r = await self.http.get("/health")
         self.assertEqual(r.headers.get("Access-Control-Allow-Origin"), "*")
