@@ -1,0 +1,32 @@
+# Local configuration (holds your light's MAC address). Never commit it.
+/config
+
+# Saved settings and schedules
+/data/
+
+# Backups and editor leftovers
+*.bak
+*.bak-*
+*.bak.*
+*.orig
+*.swp
+*~
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# A virtual environment created directly in the project directory
+/bin/
+/include/
+/lib/
+/lib64
+/pyvenv.cfg
+
+# Logs
+*.log
+logs/

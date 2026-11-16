@@ -1,0 +1,29 @@
+# netlea-ble configuration
+# Copy this file to "config" and edit the values. "config" is ignored by git.
+# Format: KEY=VALUE, one per line (systemd EnvironmentFile format).
+
+# Bluetooth MAC address of your Netlea light (required).
+# Find it with: bluetoothctl scan on   (look for a name that starts with NL-)
+NETLEA_MAC=AA:BB:CC:DD:EE:FF
+
+# TCP port for the HTTP API (optional, default 3003).
+BRIDGE_PORT=3003
+
+# Address to listen on (optional, default 0.0.0.0 = every network interface).
+# Use 127.0.0.1 if only programs on this machine need the API.
+#BRIDGE_HOST=0.0.0.0
+
+# Access-Control-Allow-Origin header (optional, default *).
+# Set to empty to send no CORS headers.
+#CORS_ORIGIN=*
+
+# Seconds to wait for the light to answer a command (optional, default 3.0).
+#RESPONSE_TIMEOUT=3.0
+
+# Where saved settings and schedules are kept (optional, default data/state.json
+# next to ble_bridge.py).
+#STATE_FILE=/opt/netlea-ble/data/state.json
+
+# While a schedule runs, resend the current values this often in minutes, even if
+# nothing changed (optional, default 15).
+#RESEND_MINUTES=15

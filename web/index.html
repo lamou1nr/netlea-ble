@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aquarium Light | Good Boy Rick Labs</title>
+<link rel="icon" type="image/png" href="assets/icon-64.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="manifest" href="assets/manifest.json">
+<meta name="application-name" content="Aquarium Light">
+<meta name="apple-mobile-web-app-title" content="Aquarium">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="author" content="Good Boy Rick Labs">
+<meta name="description" content="Control, saved settings and schedules for a Netlea aquarium light. A Good Boy Rick Labs project.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0a3a45" id="themeColor">
+<script>
+try { if (localStorage.getItem("theme") === "dark") document.documentElement.dataset.theme = "dark"; } catch (e) {}
+</script>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f7f9; --card: #ffffff; --line: #e5e7eb; --line2: #eef0f3;
+  --text: #111827; --text2: #4b5563; --muted: #6b7280; --faint: #9ca3af;
+  --accent: #0f766e; --accent-hover: #115e59; --accent-soft: #e6f4f2;
+  --danger: #dc2626; --warn: #b45309; --warn-soft: #fef3c7;
+  --track: #e5e7eb; --subtle: #fbfbfc; --danger-soft: #fef2f2;
+  --ch-R: #ef4444; --ch-W: #94a3b8; --ch-G: #22c55e; --ch-B: #3b82f6; --ch-F: #f59e0b;
+}
+:root[data-theme=dark] {
+  color-scheme: dark;
+  --bg: #0f1115; --card: #171a21; --line: #2a2f3a; --line2: #222631;
+  --text: #f3f4f6; --text2: #c4c9d2; --muted: #9aa1ad; --faint: #6b7280;
+  --accent: #2dd4bf; --accent-hover: #5eead4; --accent-soft: #11302d;
+  --danger: #f87171; --warn: #fbbf24; --warn-soft: #3a2c0d;
+  --track: #2f3542; --subtle: #13161c; --danger-soft: #3a1717;
+  --ch-R: #f87171; --ch-W: #cbd5e1; --ch-G: #4ade80; --ch-B: #60a5fa; --ch-F: #fbbf24;
+}
+:root[data-theme=dark] button.pill { color: #062421; }
+:root[data-theme=dark] .days button[aria-pressed=true] { color: #062421; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased; }
+main { max-width: 712px; margin: 0 auto; padding: 0 16px calc(96px + env(safe-area-inset-bottom)); }
+
+/* brand header */
+.brandbar { position: relative; overflow: hidden; color: #fff;
+  padding: calc(env(safe-area-inset-top) + 20px) 16px 76px;
+  background:
+    radial-gradient(90% 120% at 100% 0%, rgba(45,212,191,.55) 0%, rgba(45,212,191,0) 60%),
+    radial-gradient(70% 90% at 0% 100%, rgba(56,189,248,.28) 0%, rgba(56,189,248,0) 65%),
+    linear-gradient(135deg, #0a3a45 0%, #0d5560 48%, #0b2e4a 100%); }
+:root[data-theme=dark] .brandbar { background:
+    radial-gradient(90% 120% at 100% 0%, rgba(45,212,191,.32) 0%, rgba(45,212,191,0) 60%),
+    radial-gradient(70% 90% at 0% 100%, rgba(56,189,248,.16) 0%, rgba(56,189,248,0) 65%),
+    linear-gradient(135deg, #06222a 0%, #0a3d46 48%, #071d30 100%); }
+.head-in { max-width: 680px; margin: 0 auto; position: relative; z-index: 1; }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-mark { height: 68px; width: auto; flex: none; display: block; margin: -6px 0 -6px -2px;
+  filter: invert(1) drop-shadow(0 3px 10px rgba(0,0,0,.35)); }
+.brand-text { flex: 1; min-width: 0; }
+.brand-text h1 { font-size: 23px; line-height: 1.1; font-weight: 750; letter-spacing: -.025em; margin: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brand-text p { margin: 0 0 5px; white-space: nowrap; overflow: hidden; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  color: rgba(255,255,255,.7); display: flex; align-items: center; gap: 8px; }
+.brand-text p::before { content: ""; width: 18px; height: 2px; border-radius: 1px; background: #5eead4; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: #fff;
+  background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); padding: 5px 10px; border-radius: 999px;
+  white-space: nowrap; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.55); }
+.dot.on { background: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,.25); }
+.theme { display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border-radius: 50%; flex: none;
+  color: #fff; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); }
+.theme:hover { background: rgba(255,255,255,.24); }
+.theme svg { width: 18px; height: 18px; }
+.theme .moon, :root[data-theme=dark] .theme .sun { display: none; }
+:root[data-theme=dark] .theme .moon { display: block; }
+/* large faint copy of the logo behind the header */
+.brand-ghost { position: absolute; right: -22px; top: -14px; height: 200px; width: auto; opacity: .12;
+  filter: invert(1); pointer-events: none; user-select: none; }
+.wave { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 36px; display: block; }
+.wave path { fill: var(--bg); }
+.wave path.back { opacity: .35; }
+/* the status card sits on top of the header edge */
+.statuscard { margin-top: -58px; position: relative; z-index: 2; border-color: transparent;
+  box-shadow: 0 1px 2px rgba(15,23,42,.06), 0 14px 34px -14px rgba(8,47,58,.38); }
+:root[data-theme=dark] .statuscard { border-color: var(--line); box-shadow: 0 14px 34px -14px rgba(0,0,0,.7); }
+@media (max-width: 400px) { .status span:last-child { display: none; } .status { padding: 8px; }
+  .brand-mark { height: 58px; } .brand-text h1 { font-size: 21px; } .brand { gap: 12px; } }
+.foot { display: flex; flex-direction: column; align-items: center; gap: 2px; margin: 44px 0 8px; color: var(--faint); }
+.foot img { height: 40px; width: auto; opacity: .5; margin-bottom: 8px; }
+.foot b { font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.foot span { font-size: 12px; }
+:root[data-theme=dark] .foot img { filter: invert(1); }
+
+/* bottom menu bar */
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; background: var(--card);
+  border-top: 1px solid var(--line); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
+.tabbar .in { max-width: 480px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); }
+.tabbar button { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--faint);
+  font-size: 11px; font-weight: 500; padding: 4px 0; border-radius: 8px; }
+.tabbar button:hover { background: none; color: var(--text2); }
+.tabbar button[aria-selected=true] { color: var(--accent); }
+.tabbar svg { width: 24px; height: 24px; }
+
+/* sections */
+.sh { display: flex; align-items: center; margin: 28px 2px 10px; }
+.sh span { flex: 1; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.sf { font-size: 13px; color: var(--muted); margin: 8px 2px 0; line-height: 1.5; }
+.group { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.pad { padding: 20px; }
+.cell { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 12px 16px; position: relative; }
+.cell + .cell, details.mix > div > .cell, details.mix > .cell { border-top: 1px solid var(--line2); }
+.cell .t { flex: 1; min-width: 0; }
+.cell .t b { font-weight: 500; display: block; overflow: hidden; text-overflow: ellipsis; }
+.cell .t small { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.chev { color: var(--faint); flex: none; }
+
+/* buttons */
+button { font: inherit; border: 1px solid transparent; background: none; color: var(--accent); padding: 6px 8px;
+  cursor: pointer; border-radius: 8px; font-weight: 500; transition: background .15s, color .15s, border-color .15s; }
+button:hover { background: var(--accent-soft); }
+button:disabled { opacity: .4; cursor: default; }
+button.pill { background: var(--accent); color: #fff; padding: 9px 18px; }
+button.pill:hover { background: var(--accent-hover); }
+button.tinted { border-color: var(--line); color: var(--text); padding: 8px 16px; background: var(--card); }
+button.tinted:hover { background: var(--bg); }
+button.destructive { color: var(--danger); }
+button.destructive:hover { background: var(--danger-soft); }
+button.wide { display: block; width: 100%; text-align: center; padding: 10px; }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* inputs */
+input[type=text], input[type=number], input[type=time], select {
+  font: inherit; color: var(--text); background: var(--card); border: 1px solid var(--line);
+  border-radius: 8px; padding: 8px 10px; min-width: 0; }
+input[type=text] { width: 100%; }
+input[type=number] { width: 64px; font-variant-numeric: tabular-nums; }
+input.plain { border: 0; padding: 4px 0; border-radius: 0; background: transparent; }
+input[type=text]:focus, input[type=number]:focus, input[type=time]:focus, select:focus { border-color: var(--accent); outline: none; }
+
+/* toggle switch */
+.switch, input.ios { -webkit-appearance: none; appearance: none; width: 44px; height: 26px; border-radius: 999px;
+  background: var(--track); border: 0; padding: 0; margin: 0; position: relative; cursor: pointer; flex: none;
+  transition: background .2s; }
+.switch::after, input.ios::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
+  border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); transition: transform .2s; }
+.switch[aria-checked=true], input.ios:checked { background: var(--accent); }
+.switch[aria-checked=true]::after, input.ios:checked::after { transform: translateX(18px); }
+.switch:hover { background: var(--track); }
+.switch[aria-checked=true]:hover { background: var(--accent); }
+
+/* sliders */
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 24px; background: transparent; margin: 0;
+  --c: var(--accent); --p: 0%; }
+input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px;
+  background: linear-gradient(to right, var(--c) var(--p), var(--track) var(--p)); }
+input[type=range]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--track); }
+input[type=range]::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--c); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -7px;
+  border-radius: 50%; background: #fff; border: 1px solid var(--line); box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fff;
+  border: 1px solid var(--line); box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+
+/* status */
+.hero { display: flex; align-items: center; gap: 16px; padding: 20px; }
+.glow { width: 60px; height: 60px; border-radius: 50%; flex: none; background: var(--track);
+  transition: background .5s, box-shadow .5s; }
+.hero .t { flex: 1; min-width: 0; }
+.hero .t b { font-size: 22px; line-height: 1.15; font-weight: 700; letter-spacing: -.02em; display: block; }
+.hero .t .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+.values { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-variant-numeric: tabular-nums;
+  color: var(--text2); background: var(--bg); border: 1px solid var(--line2); border-radius: 6px; padding: 1px 7px; }
+.chip i { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.banner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 20px; font-size: 14px;
+  border-top: 1px solid var(--line2); color: var(--text2); background: var(--subtle); }
+.banner .ic { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--faint); }
+.banner.run .ic { background: var(--accent); }
+.banner.pause .ic { background: var(--warn); }
+.banner.warn { color: var(--danger); background: var(--danger-soft); }
+.banner.warn .ic { background: var(--danger); }
+.banner .grow { flex: 1; }
+.banner .ic svg { width: 11px; height: 11px; }
+
+/* brightness */
+.cc { position: relative; }
+.cc .bar { display: none; }
+.cc .lbl { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.cc .lbl .name { font-weight: 500; color: var(--text2); }
+.cc .lbl .pct { font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.cc .lbl .pct small { font-size: 16px; color: var(--muted); font-weight: 500; }
+.cc input[type=range] { height: 32px; }
+.cc input[type=range]::-webkit-slider-runnable-track { height: 8px; border-radius: 4px; }
+.cc input[type=range]::-webkit-slider-thumb { width: 26px; height: 26px; margin-top: -9px; }
+.cc input[type=range]::-moz-range-track, .cc input[type=range]::-moz-range-progress { height: 8px; border-radius: 4px; }
+.cc input[type=range]::-moz-range-thumb { width: 24px; height: 24px; }
+.seg { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 14px; }
+.seg button { color: var(--text2); border: 1px solid var(--line); font-size: 13px; padding: 6px 0; font-variant-numeric: tabular-nums; }
+.seg button:hover { background: var(--bg); }
+.seg button.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+/* color mix */
+.chan { display: grid; grid-template-columns: 70px 1fr 60px; align-items: center; gap: 14px; }
+.chan .name { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text2); }
+.chan .name i { width: 8px; height: 8px; border-radius: 50%; }
+.chan input[type=number] { width: 60px; padding: 6px 8px; }
+details.mix summary { list-style: none; cursor: pointer; }
+details.mix summary::-webkit-details-marker { display: none; }
+details.mix summary .chev { transition: transform .2s; }
+details.mix[open] summary .chev { transform: rotate(90deg); }
+
+/* saved settings */
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.tile { display: flex; align-items: center; gap: 10px; text-align: left; padding: 12px 14px; border-radius: 10px;
+  background: var(--card); border: 1px solid var(--line); color: var(--text); }
+.tile:hover { border-color: var(--accent); background: var(--card); }
+.tile .sw { width: 28px; height: 28px; border-radius: 50%; flex: none; border: 1px solid var(--line); }
+.tile b { font-size: 14px; font-weight: 500; line-height: 1.25; }
+.sw-sm { width: 28px; height: 28px; border-radius: 50%; flex: none; border: 1px solid var(--line); }
+.badge { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 6px; background: var(--accent-soft);
+  color: var(--accent); margin-left: 8px; vertical-align: 1px; }
+.empty { text-align: center; color: var(--muted); padding: 22px 16px; font-size: 14px; }
+
+/* editors */
+.form { padding: 16px; border-top: 1px solid var(--line2); background: var(--subtle); }
+.form:first-child { border-top: 0; }
+.row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.grow { flex: 1; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.custom { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.custom label { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; }
+.custom input { width: 62px; padding: 6px 8px; }
+.point { padding: 14px 16px; border-top: 1px solid var(--line2); }
+.point:first-child { border-top: 0; }
+.days { display: inline-flex; gap: 4px; }
+.days button { width: 30px; height: 30px; padding: 0; border-radius: 50%; border: 1px solid var(--line);
+  color: var(--text2); font-size: 12px; font-weight: 600; }
+.days button[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: #fff; }
+svg.chart { width: 100%; height: 170px; display: block; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 10px; }
+.legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }
+
+#toast { position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  max-width: min(90vw, 460px); background: var(--text); color: #fff; padding: 10px 16px; border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(17,24,39,.18); display: none; z-index: 10; font-size: 14px; text-align: center; }
+[hidden] { display: none !important; }
+@media (max-width: 480px) {
+  .chan { grid-template-columns: 56px 1fr 56px; gap: 10px; }
+  .pad { padding: 16px; }
+  .hero { padding: 16px; gap: 14px; }
+  .glow { width: 52px; height: 52px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="brandbar">
+  <img class="brand-ghost" src="assets/logo.png" alt="" aria-hidden="true">
+  <div class="head-in">
+    <div class="brand">
+      <img class="brand-mark" src="assets/logo.png" alt="">
+      <div class="brand-text">
+        <p>Good Boy Rick Labs</p>
+        <h1 id="pageTitle">Aquarium Light</h1>
+      </div>
+      <span class="status"><span class="dot" id="connDot"></span><span id="connText">Connecting</span></span>
+      <button class="theme" id="themeBtn" aria-label="Switch between light and dark mode" title="Light or dark mode">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 72" preserveAspectRatio="none" aria-hidden="true">
+    <path class="back" d="M0 72V30c160 26 330 34 520 22s330-46 520-46 280 22 400 40v26z"/>
+    <path d="M0 72V46c180 20 360 24 560 10s340-38 520-34 260 20 360 34v16z"/>
+  </svg>
+</header>
+<main>
+
+  <!-- STATUS (always visible) -->
+  <div class="group statuscard" aria-live="polite">
+    <div class="hero">
+      <div class="glow" id="nowSwatch" title="Approximate color"></div>
+      <div class="t">
+        <div class="eyebrow">Light</div>
+        <b id="nowTitle">Loading</b>
+        <div class="values" id="nowValues"></div>
+      </div>
+      <button class="switch" id="power" role="switch" aria-checked="false" aria-label="Light on or off"></button>
+    </div>
+    <div class="banner" id="schedBanner" hidden></div>
+  </div>
+
+  <!-- LIGHT -->
+  <section id="tab-control">
+    <div class="sh"><span>Brightness</span></div>
+    <div class="group pad">
+      <div class="cc" id="cc">
+        <div class="bar"></div>
+        <div class="lbl">
+          <span class="name">Overall brightness</span>
+          <span class="pct"><span id="brightOut">100</span><small>%</small></span>
+        </div>
+        <input type="range" id="bright" min="0" max="100" value="100" aria-label="Brightness">
+      </div>
+      <div class="seg" id="quick"></div>
+    </div>
+    <p class="sf" id="scaledText">Scales the color mix up or down.</p>
+
+    <div class="sh"><span>Color</span></div>
+    <div class="group">
+      <details class="mix" id="mix">
+        <summary class="cell">
+          <span class="t"><b>Color mix</b><small id="mixSummary"></small></span>
+          <svg class="chev" width="10" height="16" viewBox="0 0 10 16" fill="none" aria-hidden="true"><path d="M2 2l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+        <div id="sliders"></div>
+        <div class="cell">
+          <span class="t"><b>Update the light while dragging</b></span>
+          <input type="checkbox" class="ios" id="live" checked aria-label="Update the light while dragging">
+        </div>
+        <div class="cell"><button class="wide pill" id="btnSend">Send to light</button></div>
+      </details>
+    </div>
+
+    <div class="sh"><span>Saved settings</span><button data-goto="settings">Manage</button></div>
+    <div class="tiles" id="quickSettings"></div>
+    <div class="group" style="margin-top:10px">
+      <div class="cell">
+        <input type="text" id="saveName" class="plain grow" maxlength="40" placeholder="Name this color and brightness">
+        <button class="tinted" id="btnSaveNew">Save</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SAVED SETTINGS -->
+  <section id="tab-settings" hidden>
+    <div class="sh"><span>Saved settings</span><button id="btnNewSetting">Add setting</button></div>
+    <div class="group" id="settingsList"></div>
+    <p class="sf">A saved setting is a named color mix. Schedules can use it, and changing it updates every schedule that does.</p>
+  </section>
+
+  <!-- SCHEDULES -->
+  <section id="tab-schedules" hidden>
+    <div class="sh"><span>Running schedule</span></div>
+    <div class="group">
+      <div class="cell">
+        <select id="activeSchedule" class="grow" aria-label="Schedule to run"></select>
+        <button class="pill" id="btnSchedToggle">Start</button>
+      </div>
+    </div>
+    <p class="sf">While a schedule runs, the bridge sends each point on time and checks every few minutes that the light still matches. A change made by hand pauses it until the next point. Turn off any other schedule for this light (for example cron jobs) before you start one.</p>
+
+    <div class="sh"><span>Schedules</span><button id="btnNewSchedule">Add schedule</button></div>
+    <div class="group" id="scheduleList"></div>
+
+    <div id="editor" hidden>
+      <div class="sh"><span id="editorTitle">Edit schedule</span></div>
+      <div class="group">
+        <div class="cell"><input type="text" id="schedName" class="plain grow" maxlength="40" placeholder="Schedule name" aria-label="Schedule name"></div>
+        <div class="cell">
+          <span class="t"><b>Fade smoothly between points</b></span>
+          <input type="checkbox" class="ios" id="schedSmooth" aria-label="Fade smoothly between points">
+        </div>
+      </div>
+      <div class="sh"><span>Today</span></div>
+      <div class="group pad">
+        <svg class="chart" id="chart" viewBox="0 0 720 170" preserveAspectRatio="none" role="img" aria-label="Schedule over one day"></svg>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="sh"><span>Points</span><button id="btnAddPoint">Add point</button></div>
+      <div class="group" id="points"></div>
+      <div class="row" style="margin-top:16px">
+        <button class="tinted grow" id="btnEditorCancel">Close</button>
+        <button class="pill grow" id="btnEditorSave">Save schedule</button>
+      </div>
+    </div>
+  </section>
+  <footer class="foot">
+    <img src="assets/logo.png" alt="">
+    <b>Good Boy Rick Labs</b>
+    <span>Aquarium Light</span>
+  </footer>
+</main>
+<nav class="tabbar" role="tablist"><div class="in">
+  <button role="tab" data-tab="control" aria-selected="true">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 3z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>
+    Light</button>
+  <button role="tab" data-tab="settings" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="3.5" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="13.5" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="13.5" width="7" height="7" rx="2" stroke="currentColor" stroke-width="1.7"/></svg>
+    Saved settings</button>
+  <button role="tab" data-tab="schedules" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Schedules</button>
+</div></nav>
+<div id="toast" role="status"></div>
+
+<script>
+"use strict";
+const CH = ["R", "W", "G", "B", "F"];
+const MAX = { R: 255, W: 255, G: 255, B: 255, F: 10 };
+const NAMES = { R: "Red", W: "White", G: "Green", B: "Blue", F: "F" };
+const DAYS = ["M", "T", "W", "T", "F", "S", "S"];
+const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const $ = (id) => document.getElementById(id);
+const el = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k.startsWith("aria-")) e.setAttribute(k, String(v));
+    else if (v !== false && v != null) e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(k));
+  return e;
+};
+
+let settings = [], schedules = [], state = null;
+let editing = null;
+
+// ── API ──────────────────────────────────────────────────────────────────
+async function api(method, path, body) {
+  const opt = { method, headers: {} };
+  if (body !== undefined) { opt.headers["Content-Type"] = "application/json"; opt.body = JSON.stringify(body); }
+  const r = await fetch(path, opt);
+  let js = null;
+  try { js = await r.json(); } catch (e) { /* not JSON */ }
+  if (!r.ok) throw new Error((js && js.error) || `${r.status} ${r.statusText}`);
+  return js;
+}
+function toast(msg, ms = 3200) {
+  const t = $("toast"); t.textContent = msg; t.style.display = "block";
+  clearTimeout(toast.t); toast.t = setTimeout(() => (t.style.display = "none"), ms);
+}
+const fail = (e) => toast(e.message || String(e), 6000);
+
+// ── helpers ──────────────────────────────────────────────────────────────
+function rgb(v) {
+  const r = v.R + v.W * 0.85 + v.F * 18, g = v.G + v.W * 0.9 + v.F * 8, b = v.B + v.W * 0.95;
+  const m = Math.max(r, g, b);
+  if (m <= 0) return null;
+  const k = 255 / m;
+  return [Math.round(r * k), Math.round(g * k), Math.round(b * k)];
+}
+function intensity(v) { return Math.min(1, (v.R + v.W + v.G + v.B + v.F * 10) / 120); }
+function color(v) {
+  const c = v && rgb(v);
+  if (!c) return "#1a232b";
+  return `rgba(${c.join(",")},${(0.35 + 0.65 * intensity(v)).toFixed(2)})`;
+}
+function glow(v, on) {
+  const c = on && v && rgb(v);
+  if (!c) return { background: "var(--track)", boxShadow: "inset 0 0 0 1px var(--line)" };
+  const a = 0.35 + 0.65 * intensity(v);
+  return { background: `radial-gradient(circle at 35% 30%, rgba(255,255,255,.75), rgba(${c.join(",")},${a.toFixed(2)}) 45%, rgba(${c.join(",")},${(a * 0.7).toFixed(2)}) 100%)`,
+    boxShadow: `0 0 0 4px rgba(${c.join(",")},.14), 0 0 ${Math.round(16 + 28 * a)}px rgba(${c.join(",")},${(0.3 + 0.4 * a).toFixed(2)})` };
+}
+function chips(v) {
+  return CH.map((c) => el("span", { class: "chip" }, el("i", { style: `background:var(--ch-${c})` }), `${c} ${v[c] ?? 0}`));
+}
+function fmtTime(iso) {
+  if (!iso) return "";
+  const d = new Date(iso), today = new Date();
+  const t = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  return d.toDateString() === today.toDateString() ? t : `${d.toLocaleDateString([], { weekday: "short" })} ${t}`;
+}
+function hhmmLabel(s) {
+  const [h, m] = s.split(":").map(Number);
+  return new Date(2000, 0, 1, h, m).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+function daysLabel(mask) {
+  if (mask === 127) return "Every day";
+  if (mask === 31) return "Weekdays";
+  if (mask === 96) return "Weekends";
+  return DAY_NAMES.filter((_, i) => mask & (1 << i)).map((d) => d.slice(0, 3)).join(", ");
+}
+const settingById = (id) => settings.find((s) => s.id === id);
+const clamp = (x, max) => Math.max(0, Math.min(max, Math.round(Number(x) || 0)));
+function paintRange(r) {
+  const p = `${(100 * r.value / r.max).toFixed(1)}%`;
+  r.style.setProperty("--p", p);
+  if (r.id === "bright") {
+    $("cc").style.setProperty("--p", p);
+    document.querySelectorAll("#quick button").forEach((b) => b.classList.toggle("on", Number(b.dataset.p) === Number(r.value)));
+  }
+}
+
+// ── tabs ─────────────────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll(".tabbar button").forEach((x) => x.setAttribute("aria-selected", x.dataset.tab === name));
+  for (const t of ["control", "settings", "schedules"]) $("tab-" + t).hidden = t !== name;
+  window.scrollTo({ top: 0 });
+}
+document.querySelectorAll(".tabbar button").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab)));
+document.querySelectorAll("[data-goto]").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.goto)));
+
+// ── live state ───────────────────────────────────────────────────────────
+let lightOn = false;
+async function refreshState() {
+  try { state = await api("GET", "api/state"); }
+  catch (e) { $("connText").textContent = "Bridge offline"; $("connDot").className = "dot"; return; }
+  $("connText").textContent = state.connected ? "Connected" : "Ready";
+  $("connDot").className = state.connected ? "dot on" : "dot";
+
+  const v = state.light || state.sent;
+  lightOn = state.light ? state.light.on === 1 && CH.some((c) => v[c]) : !!state.sent.power && CH.some((c) => v[c]);
+  Object.assign($("nowSwatch").style, glow(v, lightOn));
+  $("nowTitle").textContent = state.light ? (lightOn ? "On" : "Off")
+    : (state.sent.power === null ? "Waiting for the first command" : (lightOn ? "On" : "Off"));
+  $("nowValues").replaceChildren(...chips(v));
+  $("power").setAttribute("aria-checked", lightOn);
+
+  const s = state.scheduler, banner = $("schedBanner");
+  const name = (schedules.find((x) => x.id === s.active_schedule) || {}).name || "schedule";
+  const icon = () => el("span", { class: "ic" }, CLOCK());
+  banner.hidden = false;
+  if (s.running && s.paused_until) {
+    banner.className = "banner pause";
+    banner.replaceChildren(icon(), el("span", { class: "grow" }, `${name} paused until ${fmtTime(s.paused_until)}`),
+      el("button", { onclick: resume }, "Resume"));
+  } else if (s.running) {
+    banner.className = "banner run";
+    banner.replaceChildren(icon(), el("span", { class: "grow" }, `${name}` + (s.fading ? ", fading" : "") +
+      (s.next_change ? `. Next change ${fmtTime(s.next_change)}` : "")));
+  } else {
+    banner.className = "banner";
+    banner.replaceChildren(icon(), el("span", { class: "grow" }, "No schedule running"),
+      el("button", { onclick: () => showTab("schedules") }, "Open schedules"));
+  }
+  if (s.last_error) {
+    banner.className = "banner warn";
+    banner.append(el("span", { style: "flex-basis:100%" }, `Last send failed: ${s.last_error}. Retrying.`));
+  }
+  renderSchedulerControls();
+}
+async function resume() {
+  try { await api("POST", "api/scheduler/resume"); toast("Schedule resumed"); refreshState(); } catch (e) { fail(e); }
+}
+
+function CLOCK() {
+  const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("width", "14"); svg.setAttribute("height", "14"); svg.setAttribute("viewBox", "0 0 24 24");
+  svg.innerHTML = '<circle cx="12" cy="12" r="9" fill="none" stroke="#fff" stroke-width="2.6"/><path d="M12 7v5l3 2" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>';
+  return svg;
+}
+
+// ── control tab ──────────────────────────────────────────────────────────
+const slider = {};
+function buildSliders() {
+  const box = $("sliders");
+  for (const c of CH) {
+    const r = el("input", { type: "range", min: 0, max: MAX[c], value: 0, "aria-label": NAMES[c] });
+    const n = el("input", { type: "number", min: 0, max: MAX[c], value: 0, "aria-label": NAMES[c] + " value" });
+    r.style.setProperty("--c", `var(--ch-${c})`);
+    r.addEventListener("input", () => { n.value = r.value; paintRange(r); changed(); });
+    n.addEventListener("input", () => { r.value = clamp(n.value, MAX[c]); paintRange(r); changed(); });
+    slider[c] = { r, n };
+    box.append(el("div", { class: "cell" }, el("div", { class: "chan grow" },
+      el("span", { class: "name" }, el("i", { style: `background:var(--ch-${c})` }), NAMES[c]), r, n)));
+  }
+  const b = $("bright");
+  b.addEventListener("input", () => { $("brightOut").textContent = b.value; paintRange(b); changed(); });
+  $("quick").replaceChildren(...[10, 25, 50, 75, 100].map((p) =>
+    el("button", { "data-p": p, onclick: () => { b.value = p; $("brightOut").textContent = p; paintRange(b); changed(true); } }, `${p}%`)));
+  paintRange(b);
+}
+function sliderValues() { const v = {}; for (const c of CH) v[c] = clamp(slider[c].n.value, MAX[c]); return v; }
+function scaledValues() {
+  const k = clamp($("bright").value, 100) / 100, v = sliderValues(), out = {};
+  for (const c of CH) out[c] = Math.min(MAX[c], Math.round(v[c] * k));
+  return out;
+}
+function setSliders(v, bright = 100) {
+  for (const c of CH) { slider[c].r.value = v[c] || 0; slider[c].n.value = v[c] || 0; paintRange(slider[c].r); }
+  const b = $("bright"); b.value = bright; $("brightOut").textContent = bright; paintRange(b);
+  updateScaledText();
+}
+function updateScaledText() {
+  const k = clamp($("bright").value, 100), s = scaledValues(), base = sliderValues();
+  $("mixSummary").textContent = CH.map((c) => `${c} ${base[c]}`).join("   ");
+  const c = rgb(base), cc = $("cc");
+  cc.style.setProperty("--fill-c", c ? `rgb(${c.join(",")})` : "#ffd60a");
+  cc.classList.toggle("dark-fill", !!c && (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]) < 150);
+  $("scaledText").textContent = k === 100 ? "Scales the color mix up or down."
+    : "Sending " + CH.map((c) => `${c} ${s[c]}`).join(", ");
+}
+let sendTimer = null;
+function changed(now = false) {
+  updateScaledText();
+  if (now || $("live").checked) { clearTimeout(sendTimer); sendTimer = setTimeout(sendNow, now ? 0 : 200); }
+}
+async function sendNow() {
+  const v = scaledValues();
+  const on = CH.some((c) => v[c]) ? 1 : 0;
+  try {
+    const r = await api("POST", "direct", { lampState: on, lampMode: 0, ...v, grade: 0, modeId: 0 });
+    const rep = r.response && r.response.report;
+    if (rep && CH.some((c) => rep[c] !== v[c])) toast("The light reports different values than were sent");
+    refreshState();
+  } catch (e) { fail(e); }
+}
+async function turnOff() {
+  try {
+    await api("POST", "direct", { lampState: 0, lampMode: 0, R: 0, W: 0, G: 0, B: 0, F: 0, grade: 0, modeId: 0 });
+    toast("Light off"); refreshState();
+  } catch (e) { fail(e); }
+}
+$("power").addEventListener("click", () => {
+  if (lightOn) { turnOff(); return; }
+  if (!CH.some((c) => scaledValues()[c])) { toast("Choose a color or a saved setting first"); $("mix").open = true; return; }
+  sendNow();
+});
+$("btnSend").addEventListener("click", sendNow);
+$("btnSaveNew").addEventListener("click", async () => {
+  const name = $("saveName").value.trim();
+  if (!name) { toast("Type a name first"); $("saveName").focus(); return; }
+  try {
+    await api("POST", "api/settings", { name, ...scaledValues() });
+    $("saveName").value = ""; toast(`Saved "${name}"`); await loadAll();
+  } catch (e) { fail(e); }
+});
+function renderQuick() {
+  const box = $("quickSettings");
+  box.replaceChildren(...(settings.length ? settings.map((s) =>
+    el("button", { class: "tile", onclick: () => applySetting(s), title: CH.map((c) => `${c} ${s[c]}`).join(" ") },
+      el("span", { class: "sw", style: `background:${color(s)}` }), el("b", {}, s.name)))
+    : [el("div", { class: "empty small", style: "grid-column:1/-1" }, "No saved settings yet. Set a color and brightness, name it below and save it.")]));
+}
+async function applySetting(s) {
+  setSliders(s, 100);
+  await sendNow();
+  toast(`Sent "${s.name}"`);
+}
+
+// ── settings tab ─────────────────────────────────────────────────────────
+function renderSettings() {
+  const box = $("settingsList");
+  if (!settings.length) { box.replaceChildren(el("div", { class: "empty" }, "No saved settings yet.")); return; }
+  box.replaceChildren(...settings.map((s) => settingRow(s)));
+}
+function settingRow(s) {
+  const row = el("div", { class: "cell indent", style: "flex-wrap:wrap" },
+    el("div", { class: "sw-sm", style: `background:${color(s)}` }),
+    el("div", { class: "t" }, el("b", {}, s.name), el("small", {}, CH.map((c) => `${c} ${s[c]}`).join("   "))),
+    el("div", { class: "row", style: "gap:4px" },
+      el("button", { onclick: () => applySetting(s) }, "Send"),
+      el("button", { onclick: () => row.replaceWith(settingForm(s)) }, "Edit"),
+      el("button", { class: "destructive", onclick: () => deleteSetting(s) }, "Delete")));
+  return row;
+}
+function settingForm(s) {
+  const draft = s ? { ...s } : { name: "", ...sliderValues() };
+  const name = el("input", { type: "text", value: draft.name, maxlength: 40, placeholder: "Name" });
+  const inputs = CH.map((c) => {
+    const i = el("input", { type: "number", min: 0, max: MAX[c], value: draft[c] });
+    return [c, i, el("label", {}, el("span", { style: `color:var(--ch-${c})` }, c), i)];
+  });
+  const read = () => { const v = { name: name.value.trim() }; for (const [c, i] of inputs) v[c] = clamp(i.value, MAX[c]); return v; };
+  const box = el("div", { class: "form" },
+    el("div", { class: "row" }, name),
+    el("div", { class: "custom" }, inputs.map((x) => x[2])),
+    el("div", { class: "row", style: "margin-top:12px" },
+      el("button", { onclick: async () => { const v = read(); setSliders(v); await sendNow(); } }, "Try on light"),
+      el("span", { class: "grow" }),
+      el("button", { onclick: () => s ? box.replaceWith(settingRow(s)) : renderSettings() }, "Cancel"),
+      el("button", { class: "pill", onclick: async () => {
+        const v = read();
+        try {
+          if (s) await api("PUT", `api/settings/${s.id}`, v); else await api("POST", "api/settings", v);
+          toast("Saved"); await loadAll();
+        } catch (e) { fail(e); }
+      } }, "Save")));
+  return box;
+}
+$("btnNewSetting").addEventListener("click", () => {
+  const box = $("settingsList");
+  if (!settings.length) box.replaceChildren();
+  box.prepend(settingForm(null));
+});
+async function deleteSetting(s) {
+  if (!confirm(`Delete "${s.name}"?`)) return;
+  try { await api("DELETE", `api/settings/${s.id}`); toast("Deleted"); await loadAll(); } catch (e) { fail(e); }
+}
+
+// ── schedules tab ────────────────────────────────────────────────────────
+function renderSchedulerControls() {
+  if (!state) return;
+  const s = state.scheduler, sel = $("activeSchedule"), keep = sel.value;
+  sel.replaceChildren(el("option", { value: "" }, schedules.length ? "Choose a schedule" : "No schedules yet"),
+    ...schedules.map((x) => el("option", { value: x.id }, x.name)));
+  sel.value = s.active_schedule || keep || "";
+  const btn = $("btnSchedToggle");
+  btn.textContent = s.enabled ? "Stop" : "Start";
+  btn.className = s.enabled ? "tinted destructive" : "pill";
+  sel.disabled = s.enabled;
+}
+$("btnSchedToggle").addEventListener("click", async () => {
+  const s = state.scheduler;
+  try {
+    if (s.enabled) {
+      await api("POST", "api/scheduler", { enabled: false });
+      toast("Schedule stopped. The light keeps its current setting.");
+    } else {
+      const id = $("activeSchedule").value;
+      if (!id) { toast("Choose a schedule first"); return; }
+      const name = schedules.find((x) => x.id === id).name;
+      if (!confirm(`Start "${name}"?\n\nThe light will change to what this schedule asks for right now. ` +
+        `Make sure nothing else (for example cron jobs) is also scheduling this light.`)) return;
+      await api("POST", "api/scheduler", { active_schedule: id, enabled: true });
+      toast(`Running "${name}"`);
+    }
+    await refreshState(); renderSchedules();
+  } catch (e) { fail(e); }
+});
+function renderSchedules() {
+  const box = $("scheduleList");
+  if (!schedules.length) { box.replaceChildren(el("div", { class: "empty" }, "No schedules yet.")); return; }
+  const active = state && state.scheduler.enabled ? state.scheduler.active_schedule : null;
+  box.replaceChildren(...schedules.map((s) => el("div", { class: "cell", style: "flex-wrap:wrap" },
+    el("div", { class: "t" },
+      el("b", { style: "white-space:normal" }, s.name, s.id === active ? el("span", { class: "badge" }, "Running") : null),
+      el("small", {}, `${s.points.length} point${s.points.length === 1 ? "" : "s"}` +
+        (s.points.length ? `, ${hhmmLabel(s.points[0].time)} to ${hhmmLabel(s.points[s.points.length - 1].time)}` : "") +
+        (s.smooth ? ", smooth fades" : ""))),
+    el("div", { class: "row", style: "gap:4px" },
+      el("button", { onclick: () => openEditor(s) }, "Edit"),
+      el("button", { onclick: () => openEditor({ ...s, id: null, name: s.name + " copy" }) }, "Copy"),
+      el("button", { class: "destructive", onclick: () => deleteSchedule(s) }, "Delete")))));
+}
+async function deleteSchedule(s) {
+  const running = state && state.scheduler.enabled && state.scheduler.active_schedule === s.id;
+  if (!confirm(`Delete "${s.name}"?` + (running ? "\n\nIt is running. The bridge schedule will stop." : ""))) return;
+  try { await api("DELETE", `api/schedules/${s.id}`); toast("Deleted"); closeEditor(); await loadAll(); } catch (e) { fail(e); }
+}
+$("btnNewSchedule").addEventListener("click", () => openEditor({ id: null, name: "", smooth: false, points: [
+  { time: "08:00", days: 127, action: settings.length ? "setting" : "values", setting: settings[0] && settings[0].id,
+    values: { R: 0, W: 10, G: 0, B: 0, F: 0 }, brightness: 100 },
+  { time: "20:00", days: 127, action: "off" }] }));
+
+function openEditor(s) {
+  editing = JSON.parse(JSON.stringify(s));
+  for (const p of editing.points) {
+    p.values = p.values || { R: 0, W: 0, G: 0, B: 0, F: 0 };
+    p.brightness = p.brightness ?? 100;
+    p.setting = p.setting || (settings[0] && settings[0].id);
+  }
+  $("editorTitle").textContent = s.id ? "Edit schedule" : "New schedule";
+  $("schedName").value = editing.name;
+  $("schedSmooth").checked = !!editing.smooth;
+  $("editor").hidden = false;
+  renderPoints();
+  $("editor").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function closeEditor() { editing = null; $("editor").hidden = true; }
+$("btnEditorCancel").addEventListener("click", closeEditor);
+$("schedName").addEventListener("input", () => (editing.name = $("schedName").value));
+$("schedSmooth").addEventListener("change", () => { editing.smooth = $("schedSmooth").checked; drawChart(); });
+$("btnAddPoint").addEventListener("click", () => {
+  const last = editing.points[editing.points.length - 1];
+  let time = "12:00";
+  if (last) { const [h, m] = last.time.split(":").map(Number); time = `${String(Math.min(23, h + 1)).padStart(2, "0")}:${String(m).padStart(2, "0")}`; }
+  editing.points.push({ time, days: 127, action: settings.length ? "setting" : "values",
+    setting: settings[0] && settings[0].id, values: { R: 0, W: 0, G: 0, B: 0, F: 0 }, brightness: 100 });
+  renderPoints();
+});
+$("btnEditorSave").addEventListener("click", async () => {
+  const body = { name: editing.name.trim(), smooth: editing.smooth, points: editing.points.map((p) => {
+    const o = { time: p.time, days: p.days, action: p.action };
+    if (p.action === "setting") Object.assign(o, { setting: p.setting, brightness: p.brightness });
+    if (p.action === "values") Object.assign(o, { values: p.values, brightness: p.brightness });
+    return o;
+  }) };
+  try {
+    const saved = editing.id ? await api("PUT", `api/schedules/${editing.id}`, body) : await api("POST", "api/schedules", body);
+    toast("Schedule saved"); await loadAll(); openEditor(saved);
+  } catch (e) { fail(e); }
+});
+
+function renderPoints() {
+  editing.points.sort((a, b) => a.time.localeCompare(b.time));
+  $("points").replaceChildren(...(editing.points.length ? editing.points.map((p, idx) => pointRow(p, idx))
+    : [el("div", { class: "empty" }, "No points yet.")]));
+  drawChart();
+}
+function pointRow(p, idx) {
+  const time = el("input", { type: "time", value: p.time, required: true, "aria-label": "Time" });
+  time.addEventListener("change", () => { if (time.value) { p.time = time.value.slice(0, 5); renderPoints(); } });
+  const dayText = el("span", { class: "muted" }, daysLabel(p.days));
+  const days = el("div", { class: "days", role: "group", "aria-label": "Days" }, DAYS.map((d, i) => {
+    const b = el("button", { "aria-pressed": !!(p.days & (1 << i)), title: DAY_NAMES[i] }, d);
+    b.addEventListener("click", () => {
+      const next = p.days ^ (1 << i);
+      if (!next) { toast("A point needs at least one day"); return; }
+      p.days = next; b.setAttribute("aria-pressed", !!(p.days & (1 << i)));
+      dayText.textContent = daysLabel(p.days); drawChart();
+    });
+    return b;
+  }));
+  const action = el("select", { "aria-label": "What to do" },
+    el("option", { value: "off" }, "Turn off"),
+    ...settings.map((s) => el("option", { value: "setting:" + s.id }, s.name)),
+    el("option", { value: "values" }, "Custom values"));
+  action.value = p.action === "setting" ? "setting:" + p.setting : p.action;
+  if (p.action === "setting" && !settingById(p.setting)) { p.action = "values"; action.value = "values"; }
+  const bright = el("input", { type: "number", min: 0, max: 100, value: p.brightness, "aria-label": "Brightness percent" });
+  bright.addEventListener("input", () => { p.brightness = clamp(bright.value, 100); drawChart(); });
+  const brightWrap = el("label", { class: "row", style: "gap:6px;font-size:15px" }, el("span", { class: "muted" }, "Brightness"), bright, "%");
+  const custom = el("div", { class: "custom" }, CH.map((c) => {
+    const i = el("input", { type: "number", min: 0, max: MAX[c], value: p.values[c], "aria-label": NAMES[c] });
+    i.addEventListener("input", () => { p.values[c] = clamp(i.value, MAX[c]); drawChart(); });
+    return el("label", {}, el("span", { style: `color:var(--ch-${c})` }, c), i);
+  }));
+  const sync = () => { brightWrap.hidden = p.action === "off"; custom.hidden = p.action !== "values"; };
+  action.addEventListener("change", () => {
+    const v = action.value;
+    if (v.startsWith("setting:")) { p.action = "setting"; p.setting = v.slice(8); } else p.action = v;
+    sync(); drawChart();
+  });
+  sync();
+  return el("div", { class: "point" },
+    el("div", { class: "row" }, time, action, brightWrap, el("span", { class: "grow" }),
+      el("button", { title: "Show this point on the light now", onclick: () => tryPoint(p) }, "Try"),
+      el("button", { class: "destructive", onclick: () => { editing.points.splice(idx, 1); renderPoints(); } }, "Remove")),
+    el("div", { class: "row small", style: "margin-top:10px" }, days, dayText),
+    custom);
+}
+async function tryPoint(p) {
+  setSliders(pointValues(p), 100);
+  await sendNow();
+  toast("Sent. A running schedule pauses until its next point.");
+}
+
+// Same rules as the bridge (netlea_schedule.py), used for the chart.
+function pointValues(p) {
+  if (p.action === "off") return { R: 0, W: 0, G: 0, B: 0, F: 0 };
+  const base = p.action === "setting" ? settingById(p.setting) : p.values;
+  if (!base) return { R: 0, W: 0, G: 0, B: 0, F: 0 };
+  const k = (p.brightness ?? 100) / 100, out = {};
+  for (const c of CH) out[c] = Math.min(MAX[c], Math.floor(base[c] * k + 0.5));
+  return out;
+}
+function dayTargets(sched, dayDate) {
+  const events = [];
+  for (let d = -8; d <= 8; d++) {
+    const day = new Date(dayDate); day.setDate(day.getDate() + d);
+    const bit = 1 << ((day.getDay() + 6) % 7);
+    for (const p of sched.points) if (p.days & bit) {
+      const [h, m] = p.time.split(":").map(Number);
+      events.push([new Date(day.getFullYear(), day.getMonth(), day.getDate(), h, m), p]);
+    }
+  }
+  events.sort((a, b) => a[0] - b[0]);
+  const out = [], start = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate());
+  for (let i = 0; i <= 24 * 60; i += 10) {
+    const t = new Date(start.getTime() + i * 60000);
+    let prev = null, next = null;
+    for (const e of events) { if (e[0] <= t) prev = e; else { next = e; break; } }
+    let v = prev ? pointValues(prev[1]) : { R: 0, W: 0, G: 0, B: 0, F: 0 };
+    if (prev && next && sched.smooth) {
+      const a = v, b = pointValues(next[1]), f = (t - prev[0]) / (next[0] - prev[0]);
+      v = {}; for (const c of CH) v[c] = Math.floor(a[c] + (b[c] - a[c]) * f + 0.5);
+    }
+    out.push({ minute: i, ...v });
+  }
+  return out;
+}
+function drawChart() {
+  if (!editing) return;
+  const W = 720, H = 180, pad = 22;
+  const data = dayTargets(editing, new Date());
+  const top = Math.max(10, ...data.flatMap((d) => ["R", "W", "G", "B"].map((c) => d[c])));
+  const x = (m) => (m / 1440) * W, y = (v) => H - pad - (v / top) * (H - 2 * pad);
+  const parts = [];
+  for (let h = 0; h <= 24; h += 6) {
+    parts.push(`<line x1="${x(h * 60)}" x2="${x(h * 60)}" y1="8" y2="${H - pad}" stroke="var(--sep)"/>`);
+    if (h < 24) parts.push(`<text x="${x(h * 60) + 4}" y="${H - 6}" font-size="11" fill="var(--label2)">${hhmmLabel(String(h).padStart(2, "0") + ":00")}</text>`);
+  }
+  for (const c of CH) {
+    const pts = data.map((d) => `${x(d.minute).toFixed(1)},${y(c === "F" ? d.F * top / 10 : d[c]).toFixed(1)}`).join(" ");
+    parts.push(`<polyline fill="none" stroke="var(--ch-${c})" stroke-width="2.2" stroke-linejoin="round" ${c === "F" ? 'stroke-dasharray="4 3"' : ""} points="${pts}"/>`);
+  }
+  const now = new Date(), nm = now.getHours() * 60 + now.getMinutes();
+  parts.push(`<line x1="${x(nm)}" x2="${x(nm)}" y1="8" y2="${H - pad}" stroke="var(--label)" stroke-opacity=".45" stroke-dasharray="2 3"/>`);
+  parts.push(`<text x="6" y="18" font-size="11" fill="var(--label2)">${top}</text>`);
+  $("chart").innerHTML = parts.join("");
+  $("legend").replaceChildren(...CH.map((c) => el("span", {}, el("i", { style: `background:var(--ch-${c})` }),
+    c === "F" ? "F (0 to 10, scaled to fit)" : NAMES[c])), el("span", {}, "Dotted line: now"));
+}
+
+// ── light / dark mode ──
+function applyTheme(t) {
+  if (t === "dark") document.documentElement.dataset.theme = "dark";
+  else delete document.documentElement.dataset.theme;
+  $("themeColor").setAttribute("content", t === "dark" ? "#06222a" : "#0a3a45");
+  try { localStorage.setItem("theme", t); } catch (e) { /* storage unavailable */ }
+  if (editing) drawChart();
+}
+$("themeBtn").addEventListener("click", () =>
+  applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+if (document.documentElement.dataset.theme === "dark") $("themeColor").setAttribute("content", "#06222a");
+
+// ── start ────────────────────────────────────────────────────────────────
+async function loadAll() {
+  try { [settings, schedules] = await Promise.all([api("GET", "api/settings"), api("GET", "api/schedules")]); }
+  catch (e) { fail(e); }
+  renderQuick(); renderSettings(); renderSchedules(); await refreshState();
+  if (editing) renderPoints();
+}
+buildSliders();
+loadAll().then(() => {
+  const v = state && (state.light || state.sent);
+  if (v) setSliders(v, 100);
+  renderSchedules();
+});
+setInterval(() => { if (!document.hidden) refreshState(); }, 5000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshState(); });
+</script>
+</body>
+</html>

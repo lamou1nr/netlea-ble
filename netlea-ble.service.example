@@ -1,0 +1,15 @@
+[Unit]
+Description=Netlea BLE Bridge
+After=bluetooth.target network-online.target
+Wants=bluetooth.target network-online.target
+
+[Service]
+Type=simple
+# Adjust both paths if you installed somewhere other than /opt/netlea-ble.
+EnvironmentFile=/opt/netlea-ble/config
+ExecStart=/opt/netlea-ble/.venv/bin/python3 /opt/netlea-ble/ble_bridge.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
