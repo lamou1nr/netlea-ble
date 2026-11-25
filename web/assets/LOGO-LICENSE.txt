@@ -1,4 +1,4 @@
-The Ricky logo (logo.png and the icon-*.png files in this folder) and the name
+The Ricky logo (logo.png in this folder) and the name
 Good Boy Rick Labs belong to Neil Lamoureux and are not covered by the MIT
 license that applies to the code.
 
@@ -6,3 +6,6 @@ You may keep and show them when you run, copy or share this app.
 You may not use them for any other project or product.
 If you build something different from this code, replace the logo and the name
 with your own.
+
+The icon-*.png files show the light logo, which is covered by the MIT license
+like the code.

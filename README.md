@@ -159,11 +159,12 @@ service, and use `http://<host>:3003/`. The page has three parts:
   percentage. "Fade smoothly between points" moves the values gradually from one point to
   the next instead of switching at the point. A chart shows the day.
 
-The round switch at the top right changes between light and dark mode. To use your own
-logo in the header, replace `web/assets/logo.png` with your image (dark artwork on a transparent
-background; the page shows it in white). The `icon-*.png` files are the browser tab and home
-screen icons, and `manifest.json` holds the name shown when the page is added to a phone's
-home screen.
+The round switch at the top right changes between light and dark mode. The header and
+footer show a simple light logo, drawn as an inline SVG (`<symbol id="lightLogo">` in
+`web/index.html`). The large faint image behind the header is `web/assets/logo.png`; to use
+your own, replace it with your image (dark artwork on a transparent background; the page
+shows it in white). The `icon-*.png` files are the browser tab and home screen icons, and
+`manifest.json` holds the name shown when the page is added to a phone's home screen.
 
 The page works behind a reverse proxy under a sub-path (for example `/light/`), because it
 uses relative addresses.
@@ -493,7 +494,7 @@ The code is under the MIT license. See [LICENSE](LICENSE).
 
 ### Logo and name
 
-The Ricky logo (the image files in `web/assets/` and `docs/`) and the name Good Boy Rick Labs are not
+The Ricky logo (`web/assets/logo.png` and the image files in `docs/`) and the name Good Boy Rick Labs are not
 covered by the MIT license. You may keep and show them when you run, copy or share this app.
 You may not use them for any other project or product. If you build something different
 from this code, replace the logo and the name with your own.

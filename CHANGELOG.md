@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- The web page header and footer show a simple light logo instead of the Ricky logo, and
+  the page no longer shows the Good Boy Rick Labs name. The faint logo watermark behind
+  the header is unchanged. The browser tab and home screen icons use the light logo.
+
 ## v0.1.1 (2026-11-15)
 
 - The README shows the Good Boy Rick Labs logo.
